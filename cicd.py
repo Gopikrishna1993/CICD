@@ -25,7 +25,7 @@ method_config=json.loads(readFile(method_filename))
 mapping_rules_config=json.loads(readFile(mapping_rules_filename))
 activedocs_config=json.loads(readFile(activedocs_filename))
 activedocs_config_spec=json.dumps(activedocs_config["body"]) 
-application_plan_config=son.loads(readFile(application_plan_filename))
+application_plan_config=json.loads(readFile(application_plan_filename))
 
 admin_url = '3scale-admin.apps.api.abgapiservices.com'
 
