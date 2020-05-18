@@ -2,6 +2,6 @@
 "http_method":"GET",
 "pattern":"/upi/myself",
 "delta":"1",
-"position":"4"
+"position":"4",
 "last":"false"
 }
