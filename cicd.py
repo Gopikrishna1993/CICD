@@ -93,7 +93,7 @@ product_Mapping_rule_cmd = 'curl -k -s -X POST "https://' + admin_url + \
 										  ' --data-urlencode \'http_method=' + mapping_rules_config["http_method"] + '\'' + \
 										  ' --data-urlencode \'pattern=' + mapping_rules_config["pattern"] + '\'' + \
 										  ' --data-urlencode \'delta=' + mapping_rules_config["delta"] + '\'' + \
-										  ' --data-urlencode \'metric_id' +  + metric_id + '\'' + \
+										  ' --data-urlencode \'metric_id=' +   metric_id + '\'' + \
 										  ' --data-urlencode \'position=' + mapping_rules_config["position"] + '\'' + \
 										  ' --data-urlencode \'last=' + mapping_rules_config["last"] + '\''
 										  
