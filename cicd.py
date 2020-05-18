@@ -95,7 +95,7 @@ product_Mapping_rule_cmd = 'curl -k -s -X POST "https://' + admin_url + \
 										  ' --data-urlencode \'delta=' + mapping_rules_config["delta"] + '\'' + \
 										  ' --data-urlencode \'metric_id' +  + metric_id + '\'' + \
 										  ' --data-urlencode \'position=' + mapping_rules_config["position"] + '\'' + \
-										  ' --data-urlencode \'last' + mapping_rules_config["last"] + '\''
+										  ' --data-urlencode \'last=' + mapping_rules_config["last"] + '\''
 										  
 product_Mapping_rule = subprocess.check_output(product_Mapping_rule_cmd, shell=True, universal_newlines=True)                                 
 
@@ -106,10 +106,10 @@ product_activedocs_cmd = 'curl -k -s -X POST "https://' + admin_url + \
 									' -d \'access_token=' + admin_accesstoken + '\'' + \
 									' --data-urlencode \'name=' + activedocs_config["name"] + '\'' + \
 									' --data-urlencode \'service_id=' + service_id + '\'' + \
-									' --data-urlencode \'body' + activedocs_config_spec + '\'' + \
-									' --data-urlencode \'description' + activedocs_config["description"] + '\'' + \
-									' --data-urlencode \'system_name' + activedocs_config["system_name"] + '\'' + \
-									' --data-urlencode \'skip_swagger_validations' + activedocs_config["skip_swagger_validations"] + '\'' 
+									' --data-urlencode \'body=' + activedocs_config_spec + '\'' + \
+									' --data-urlencode \'description=' + activedocs_config["description"] + '\'' + \
+									' --data-urlencode \'system_name=' + activedocs_config["system_name"] + '\'' + \
+									' --data-urlencode \'skip_swagger_validations=' + activedocs_config["skip_swagger_validations"] + '\'' 
 									
 product_activedocs = subprocess.check_output(product_activedocs_cmd, shell=True, universal_newlines=True)                                 
 print "Product Active docs added "
@@ -120,7 +120,7 @@ product_application_plan_cmd = 'curl -k -s -X POST "https://' + admin_url + \
 										' -d \'access_token=' + admin_accesstoken + '\'' + \
 										' --data-urlencode \'name=' + application_plan_config["name"] + '\'' + \
 									    ' --data-urlencode \'state_event=' + application_plan_config["state_event"] + '\'' + \
-									    ' --data-urlencode \'system_name' + application_plan_config["system_name"] + '\''
+									    ' --data-urlencode \'system_name=' + application_plan_config["system_name"] + '\''
 
 product_application_plan = subprocess.check_output(product_application_plan_cmd, shell=True, universal_newlines=True)                                 
 print "Product Gateway Application Plan added =>" 
