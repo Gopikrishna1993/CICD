@@ -84,7 +84,7 @@ product_method_cmd = 'curl -k -s -X POST "https://' + admin_url + \
                                                                         ' --data-urlencode \'description=' + method_config["description"] + '\''
 
 product_method = subprocess.check_output(product_method_cmd, shell=True, universal_newlines=True)                                 
-print "Product Gateway Method added =>" + method_config						
+					
 									
 #Apply Product Mapping Rules
 product_Mapping_rule_cmd = 'curl -k -s -X POST "https://' + admin_url + \
@@ -98,7 +98,7 @@ product_Mapping_rule_cmd = 'curl -k -s -X POST "https://' + admin_url + \
 										  ' --data-urlencode \'last' + mapping_rules_config["last"] + '\''
 										  
 product_Mapping_rule = subprocess.check_output(product_Mapping_rule_cmd, shell=True, universal_newlines=True)                                 
-print "Product Gateway Mapping rule added =>" + mapping_rules_config
+
 
 #Apply Product Active Docs
 product_activedocs_cmd = 'curl -k -s -X POST "https://' + admin_url + \
@@ -123,7 +123,7 @@ product_application_plan_cmd = 'curl -k -s -X POST "https://' + admin_url + \
 									    ' --data-urlencode \'system_name' + application_plan_config["system_name"] + '\''
 
 product_application_plan = subprocess.check_output(product_application_plan_cmd, shell=True, universal_newlines=True)                                 
-print "Product Gateway Application Plan added =>" + application_plan_config
+print "Product Gateway Application Plan added =>" 
 
 #Promote to Staging
 promote_staging_cmd= 'curl -k -s  -X POST "https://' + admin_url + \
