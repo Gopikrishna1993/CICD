@@ -88,7 +88,7 @@ product_method = subprocess.check_output(product_method_cmd, shell=True, univers
 									
 #Apply Product Mapping Rules
 product_Mapping_rule_cmd = 'curl -k -s -X POST "https://' + admin_url + \
-                                          '/admin/api/services/' + service_id + '/proxy/mapping_rules.xml' + \
+                                          '/admin/api/services/' + service_id + '/proxy/mapping_rules.xml"' + \
 										  ' -d \'access_token=' + admin_accesstoken + '\'' + \
 										  ' --data-urlencode \'http_method=' + mapping_rules_config["http_method"] + '\'' + \
 										  ' --data-urlencode \'pattern=' + mapping_rules_config["pattern"] + '\'' + \
@@ -102,7 +102,7 @@ product_Mapping_rule = subprocess.check_output(product_Mapping_rule_cmd, shell=T
 
 #Apply Product Active Docs
 product_activedocs_cmd = 'curl -k -s -X POST "https://' + admin_url + \
-                                    '/admin/api/active_docs.json' + \
+                                    '/admin/api/active_docs.json"' + \
 									' -d \'access_token=' + admin_accesstoken + '\'' + \
 									' --data-urlencode \'name=' + activedocs_config["name"] + '\'' + \
 									' --data-urlencode \'service_id=' + service_id + '\'' + \
@@ -116,7 +116,7 @@ print "Product Active docs added "
 
 #Apply Product Application plan
 product_application_plan_cmd = 'curl -k -s -X POST "https://' + admin_url + \
-                                        '/admin/api/services/' + service_id + '/application_plans.xml' + \
+                                        '/admin/api/services/' + service_id + '/application_plans.xml"' + \
 										' -d \'access_token=' + admin_accesstoken + '\'' + \
 										' --data-urlencode \'name=' + application_plan_config["name"] + '\'' + \
 									    ' --data-urlencode \'state_event=' + application_plan_config["state_event"] + '\'' + \
