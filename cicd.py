@@ -70,9 +70,9 @@ product_getmetricid_cmd = 'curl -k -s -X GET "https://' + admin_url + \
                                          '/admin/api/services/' + service_id + '/metrics.xml?' + 'access_token=' + admin_accesstoken +'"'
 										 
 product_getmetricid = subprocess.check_output(product_getmetricid_cmd, shell=True, universal_newlines=True)
-xmlparsed = ET.parse(product_getmetricid)
+xmlparsed = ET.fromstring(product_getmetricid)
 metricid = xmlparsed.getroot()
-metric_id = metricid[0][0].text 
+metric_id = metricid[0][0].text
 print " metric id = " + metric_id
 
 #Apply Product Method
