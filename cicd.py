@@ -171,8 +171,8 @@ for backend in backends["backend_apis"]:
 #Apply Backend usage:
 product_apply_backend_usage_cmd = 'curl -k -s -X POST "https://' + admin_url + \
                                         '/admin/api/services/' + service_id + '/backend_usages.json"' + \
-										' -d \'access_token=' + admin_accesstoken + '\'' + \
-										' --data-urlencode \'backend_api_id=' + backend_id + '\'' + \
+										' -d \'access_token=' + str(admin_accesstoken) + '\'' + \
+										' --data-urlencode \'backend_api_id=' + str(backend_id) + '\'' + \
 									    ' --data-urlencode \'path=' + Backend_usage_config["path"] + '\''
 				
 
