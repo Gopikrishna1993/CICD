@@ -94,7 +94,7 @@ product_get_mappingrule_id_cmd = 'curl -k -s -X GET "https://' + admin_url + \
 product_get_mappingrule_id=	subprocess.check_output(product_get_mappingrule_id_cmd, shell=True, universal_newlines=True)
 xmlparsed = ET.fromstring(product_get_mappingrule_id)				
 mappingrule_id = xmlparsed[0][0].text					
-
+print " mappingrule_id = " + mappingrule_id
 #Delete default mapping rule.
 product_Delete_Mapping_rule_cmd = 'curl -k -s -X DELETE "https://' + admin_url + \
                                           '/admin/api/services/' + service_id + '/proxy/mapping_rules.xml/' + mappingrule_id + '.xml"' \
@@ -157,10 +157,10 @@ for product_backend in product_backends:
 				
 get_backends_cmd= 'curl -k -s  -X GET "https://' + admin_url + '/admin/api/backend_apis.json?' + \
                    'access_token=' + admin_accesstoken + '"'
-backends = subprocess.check_output(get_backends_cmd, shell=True, universal_newlines=True)
-backends_dict = json.loads(backends)
-print backends_dict
-for backend in backends_dict:
+backends = json.loads(subprocess.check_output(get_backends_cmd, shell=True, universal_newlines=True))
+#backends_dict = json.loads(backends)
+print backends
+for backend in backends:
 	backend_name =backend["backend_api"]["system_name"]
 	if backend_name == Backend_usage_config["name"]:
 		backend_id =backend["backend_api"]["id"]
