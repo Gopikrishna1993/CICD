@@ -17,6 +17,7 @@ method_filename = sys.argv[3]
 mapping_rules_filename = sys.argv[4]
 activedocs_filename = sys.argv[5]
 application_plan_filename = sys.argv[6]
+Backend_usage_filename = sys.argv[7]
 
 product_deploy_config=json.loads(readFile(filename))
 policy_config=json.loads(readFile(policy_filename))
@@ -26,7 +27,7 @@ mapping_rules_config=json.loads(readFile(mapping_rules_filename))
 activedocs_config=json.loads(readFile(activedocs_filename))
 activedocs_config_spec=json.dumps(activedocs_config["body"]) 
 application_plan_config=json.loads(readFile(application_plan_filename))
-
+Backend_usage_config =json.loads(readFile(Backend_usage_filename))
 admin_url = '3scale-admin.apps.api.abgapiservices.com'
 
 remote_name = 'abg-cicd'
@@ -85,6 +86,22 @@ product_method_cmd = 'curl -k -s -X POST "https://' + admin_url + \
 
 product_method = subprocess.check_output(product_method_cmd, shell=True, universal_newlines=True)                                 
 					
+#GET default mapping ruleid Method
+					
+product_get_mappingrule_id_cmd = 'curl -k -s -X GET "https://' + admin_url + \	
+                                 				'/admin/api/services/' + service_id + '/proxy/mapping_rules.xml?' + 'access_token=' +admin_accesstoken +'"'
+												
+product_get_mappingrule_id=	subprocess.check_output(product_get_mappingrule_id_cmd, shell=True, universal_newlines=True)
+xmlparsed = ET.fromstring(product_get_mappingrule_id)				
+mappingrule_id = xmlparsed[0][0].text					
+
+#Delete default mapping rule.
+product_Delete_Mapping_rule_cmd = 'curl -k -s -X DELETE "https://' + admin_url + \
+                                          '/admin/api/services/' + service_id + '/proxy/mapping_rules.xml/' + product_Delete_Mapping_rule_cmd + '.xml"' \
+										  ' -d \'access_token=' + admin_accesstoken + '\''
+										  
+product_Delete_Mapping_rule= subprocess.check_output(product_Delete_Mapping_rule_cmd, shell=True, universal_newlines=True)
+
 									
 #Apply Product Mapping Rules
 product_Mapping_rule_cmd = 'curl -k -s -X POST "https://' + admin_url + \
@@ -125,6 +142,43 @@ product_application_plan_cmd = 'curl -k -s -X POST "https://' + admin_url + \
 product_application_plan = subprocess.check_output(product_application_plan_cmd, shell=True, universal_newlines=True)                                 
 print "Product Gateway Application Plan added =>" 
 
+product_backends_cmd= 'curl -k -s -X GET "https://' + admin_url + '/admin/api/services/' + \
+                                                                                                                                                                str(service_id) + '/backend_usages.json?access_token=' + admin_accesstoken + '"';
+product_backends = json.loads(subprocess.check_output(product_backends_cmd, shell=True, universal_newlines=True))
+
+for product_backend in product_backends:
+                backend_id = product_backend["backend_usage"]["id"]
+                del_product_backend_cmd= 'curl -k -s -X DELETE "https://' + admin_url + '/admin/api/services/' + \
+                                                                                                                                                                service_id + '/backend_usages/' + str(backend_id) + \
+                                                                                                                                                                '.json?access_token=' + admin_accesstoken + '"';
+                #print del_product_backend_cmd
+                del_product_backend = subprocess.check_output(del_product_backend_cmd, shell=True, universal_newlines=True)
+
+				
+get_backends_cmd= 'curl -k -s  -X GET "https://' + admin_url + '/admin/api/backend_apis.json?' + \
+                   'access_token=' + admin_accesstoken + '"';
+backends = subprocess.check_output(get_backends_cmd, shell=True, universal_newlines=True)
+backends_dict = json.loads(backends)
+
+for backend in backends_dict:
+                backend_name =backend["backend_api"]["name"]
+				
+				if backend_name == Backend_usage_config["name"]:
+					
+				 backend_id =backend["backend_api"]["id"]
+					
+					
+#Apply Backend usage:
+product_apply_backend_usage_cmd = 'curl -k -s -X POST "https://' + admin_url + \	
+                                        '/admin/api/services/' + service_id + '/backend_usages.json"' + \
+										' -d \'access_token=' + admin_accesstoken + '\'' + \
+										' --data-urlencode \'backend_api_id=' + backend_id + '\'' + \
+									    ' --data-urlencode \'path' + Backend_usage_config["path"] + '\''
+				
+
+product_apply_backend_usage= subprocess.check_output(product_apply_backend_usage_cmd, shell=True, universal_newlines=True)
+
+print "Product Gateway Backend Usage added =>" 
 #Promote to Staging
 promote_staging_cmd= 'curl -k -s  -X POST "https://' + admin_url + \
 					'/admin/api/services/' + str(service_id) + \
