@@ -97,7 +97,7 @@ mappingrule_id = xmlparsed[0][0].text
 
 #Delete default mapping rule.
 product_Delete_Mapping_rule_cmd = 'curl -k -s -X DELETE "https://' + admin_url + \
-                                          '/admin/api/services/' + service_id + '/proxy/mapping_rules.xml/' + product_Delete_Mapping_rule_cmd + '.xml"' \
+                                          '/admin/api/services/' + service_id + '/proxy/mapping_rules.xml/' + mappingrule_id + '.xml"' \
 										  ' -d \'access_token=' + admin_accesstoken + '\''
 										  
 product_Delete_Mapping_rule= subprocess.check_output(product_Delete_Mapping_rule_cmd, shell=True, universal_newlines=True)
