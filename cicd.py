@@ -167,11 +167,11 @@ for backend in backends_dict:
 
 		
 #Apply Backend usage:
-product_apply_backend_usage_cmd = 'curl -k -s -X POST "https://' + admin_url + \	
+product_apply_backend_usage_cmd = 'curl -k -s -X POST "https://' + admin_url + \
                                         '/admin/api/services/' + service_id + '/backend_usages.json"' + \
 										' -d \'access_token=' + admin_accesstoken + '\'' + \
 										' --data-urlencode \'backend_api_id=' + backend_id + '\'' + \
-									    ' --data-urlencode \'path' + Backend_usage_config["path"] + '\''
+									    ' --data-urlencode \'path=' + Backend_usage_config["path"] + '\''
 				
 
 product_apply_backend_usage= subprocess.check_output(product_apply_backend_usage_cmd, shell=True, universal_newlines=True)
