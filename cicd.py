@@ -89,7 +89,8 @@ product_method = subprocess.check_output(product_method_cmd, shell=True, univers
 #GET default mapping ruleid Method
 					
 product_get_mappingrule_id_cmd = 'curl -k -s -X GET "https://' + admin_url + \
-                                 	'/admin/api/services/' + service_id + '/proxy/mapping_rules.xml?' + 'access_token=' + admin_accesstoken +'"'								
+                                 	'/admin/api/services/' + service_id + '/proxy/mapping_rules.xml?' + 'access_token=' + admin_accesstoken +'"'
+												
 product_get_mappingrule_id=	subprocess.check_output(product_get_mappingrule_id_cmd, shell=True, universal_newlines=True)
 xmlparsed = ET.fromstring(product_get_mappingrule_id)				
 mappingrule_id = xmlparsed[0][0].text					
@@ -160,13 +161,11 @@ backends = subprocess.check_output(get_backends_cmd, shell=True, universal_newli
 backends_dict = json.loads(backends)
 
 for backend in backends_dict:
-                backend_name =backend["backend_api"]["name"]
-				
-				if backend_name == Backend_usage_config["name"]:
-					
-				 backend_id =backend["backend_api"]["id"]
-					
-					
+	backend_name =backend["backend_api"]["name"]
+	if backend_name == Backend_usage_config["name"]:
+		backend_id =backend["backend_api"]["id"]
+
+		
 #Apply Backend usage:
 product_apply_backend_usage_cmd = 'curl -k -s -X POST "https://' + admin_url + \	
                                         '/admin/api/services/' + service_id + '/backend_usages.json"' + \
