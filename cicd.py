@@ -143,25 +143,25 @@ product_application_plan = subprocess.check_output(product_application_plan_cmd,
 print "Product Gateway Application Plan added =>" 
 
 product_backends_cmd= 'curl -k -s -X GET "https://' + admin_url + '/admin/api/services/' + \
-                                                                                                                                                                str(service_id) + '/backend_usages.json?access_token=' + admin_accesstoken + '"';
+                                                                                                                                                                str(service_id) + '/backend_usages.json?access_token=' + admin_accesstoken + '"'
 product_backends = json.loads(subprocess.check_output(product_backends_cmd, shell=True, universal_newlines=True))
 
 for product_backend in product_backends:
                 backend_id = product_backend["backend_usage"]["id"]
                 del_product_backend_cmd= 'curl -k -s -X DELETE "https://' + admin_url + '/admin/api/services/' + \
                                                                                                                                                                 service_id + '/backend_usages/' + str(backend_id) + \
-                                                                                                                                                                '.json?access_token=' + admin_accesstoken + '"';
+                                                                                                                                                                '.json?access_token=' + admin_accesstoken + '"'
                 #print del_product_backend_cmd
                 del_product_backend = subprocess.check_output(del_product_backend_cmd, shell=True, universal_newlines=True)
 
 				
 get_backends_cmd= 'curl -k -s  -X GET "https://' + admin_url + '/admin/api/backend_apis.json?' + \
-                   'access_token=' + admin_accesstoken + '"';
+                   'access_token=' + admin_accesstoken + '"'
 backends = subprocess.check_output(get_backends_cmd, shell=True, universal_newlines=True)
 backends_dict = json.loads(backends)
 print backends_dict
 for backend in backends_dict:
-	backend_name =backend["backend_api"]["name"]
+	backend_name =backend["backend_api"]["system_name"]
 	if backend_name == Backend_usage_config["name"]:
 		backend_id =backend["backend_api"]["id"]
 
