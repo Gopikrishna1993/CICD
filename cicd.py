@@ -2,7 +2,10 @@ import json
 import sys
 import subprocess
 import re
-import xml.etree.ElementTree as ET
+
+def getServiceId(product_copy):
+	service_id = re.search(r'new service id (\d+).*$', product_copy, re.DOTALL).group(1)
+	return service_id;
 
 def readFile(filename):
 	file = open(filename)
@@ -10,141 +13,94 @@ def readFile(filename):
 	file.close()
 	return file_text
 
-admin_accesstoken = 'eca716de14ec2de174ffcbb8709b4b2dafa62b92701ce302a64c1d84020e6714'
+def getBackendId(backends, backend_system_name):
+	backend_id = 0
+	for backend in backends['backend_apis']:
+		system_name = backend["backend_api"]["system_name"]
+		if (system_name == backend_system_name):
+			backend_id = backend["backend_api"]["id"]
+			break
+	return backend_id
+
 filename = sys.argv[1]
-policy_filename = sys.argv[2]
-method_filename = sys.argv[3]
-mapping_rules_filename = sys.argv[4]
-activedocs_filename = sys.argv[5]
-application_plan_filename = sys.argv[6]
+env_to_promote = sys.argv[2]
+source_admin_url = sys.argv[3]
+destination_admin_url = sys.argv[4]
 
-product_deploy_config=json.loads(readFile(filename))
-policy_config=json.loads(readFile(policy_filename))
-policy_config=json.dumps(policy_config) 
-method_config=json.loads(readFile(method_filename))
-mapping_rules_config=json.loads(readFile(mapping_rules_filename))
-activedocs_config=json.loads(readFile(activedocs_filename))
-activedocs_config_spec=json.dumps(activedocs_config["body"]) 
-application_plan_config=json.loads(readFile(application_plan_filename))
+admin_url_regex = re.compile(r'https://(\w+)@(.*)$')
+admin_accesstoken = admin_url_regex.search(destination_admin_url).group(1)
+curl_url = admin_url_regex.search(destination_admin_url).group(2)
+print 'Access Token =>' + admin_accesstoken
+print 'Curl URL =>' + curl_url
+print 'filename =>' + filename
+print 'env_to_promote =>' + env_to_promote
+print 'source_admin_url =>' + source_admin_url
+print 'destination_admin_url =>' + destination_admin_url
 
-admin_url = '3scale-admin.apps.api.abgapiservices.com'
-
-remote_name = 'abg-cicd'
-
-add_remote_cmd = '3scale -k remote add abg-cicd https://' + admin_accesstoken + '@' +product_deploy_config["admin_url"]
+add_remote_cmd = '3scale -k remote add abg-cicd ' + destination_admin_url
 add_remote = subprocess.check_output(add_remote_cmd, shell=True, universal_newlines=True)
 
-#Create API Product
-apply_product_cmd = '3scale -k service apply ' + remote_name + ' ' + product_deploy_config["product_name"] + \
-									' -a oidc -n ' + product_deploy_config["product_name"]
-apply_product = subprocess.check_output(apply_product_cmd, shell=True, universal_newlines=True)
-service_id = apply_product.split(":")[1].strip()
-print "Product Created =>" + service_id
+environment = json.loads(readFile(filename))
+#print 'environment =>' + environment
 
-#Apply API Product - Proxy Configuration
-product_proxy_cmd = 'curl -k -s -X PATCH "https://' + admin_url + \
-										'/admin/api/services/' + service_id + '/proxy.xml"' + \
+#zyncsso_url = environment[env_to_promote]["zyncsso_url"]
+#print "Zync SSO URL->" + zyncsso_url
+
+#Copy and update product
+for product in environment[env_to_promote]["products"]:
+	#copy product
+	product_copy_cmd = '3scale -k product copy -s ' + source_admin_url + \
+							' -d ' + destination_admin_url + ' ' + product["product"]
+	product_copy = subprocess.check_output(product_copy_cmd, shell=True, universal_newlines=True)
+	#print product_copy
+	print "Now updating product=>" + product["product"]
+	print "Name->" + product["product"]
+	print "Staging URL->" + product["staging_public_baseurl"]
+	print "Production URL->" + product["production_public_baseurl"]
+	zyncsso_url = product["zyncsso_url"]
+	print "Zync SSO URL->" + zyncsso_url
+	#get service id
+	service_id = getServiceId(product_copy)
+	#get_products_cmd= 'curl -k -s -X GET "https://' + curl_url + \
+	#					'/admin/api/services.xml?access_token=' + admin_accesstoken + '"'
+	#print get_products_cmd
+	product_proxy_cmd = 'curl -k -s -X PATCH "https://' + curl_url + \
+										'/admin/api/services/' + str(service_id) + '/proxy.xml"' + \
 										' -d \'access_token=' + admin_accesstoken + '\'' + \
-							      ' --data-urlencode \'oidc_issuer_endpoint=' + product_deploy_config["oidc_endpoint"] + '\'' + \
-							      ' --data-urlencode \'sandbox_endpoint=' + product_deploy_config["sandbox_endpoint"] + '\'' + \
-							      ' --data-urlencode \'endpoint=' + product_deploy_config["endpoint"] + '\'' + \
-                                  ' --data-urlencode \'api_backend=' + product_deploy_config["api_backend"] + '\'' + \
-                                  ' -d \'api_test_path=' + product_deploy_config["api_test_path"] + '\'' + \
-                                  ' -d \'oidc_issuer_type=' + "keycloak" + '\''
-                                  
-product_proxy = subprocess.check_output(product_proxy_cmd, shell=True, universal_newlines=True)
-print "Product Proxy Configuration Updated  =>" + service_id
+							      ' --data-urlencode \'oidc_issuer_endpoint=' + zyncsso_url + '\'' + \
+							      ' --data-urlencode \'sandbox_endpoint=' + \
+							      product["staging_public_baseurl"] + '\'' + \
+							      ' --data-urlencode \'endpoint=' + \
+							      product["production_public_baseurl"] + '\''
+	#print product_proxy_cmd
+	product_proxy = subprocess.check_output(product_proxy_cmd, shell=True, universal_newlines=True)
+	product["id"] = service_id
 
-#Apply Product Policies
-
-product_policy_cmd = 'curl -k -s -X PUT "https://' + admin_url + \
-									'/admin/api/services/' + service_id + '/proxy/policies.json"' + \
-									' -d \'access_token=' + admin_accesstoken + '\'' + \
-									' --data-urlencode \'policies_config=' + policy_config + '\''
-
-product_policy= subprocess.check_output(product_policy_cmd, shell=True, universal_newlines=True)                                 
-print "Product Gateway Policy Applied =>" + policy_config
-
-#Get Product Metric_id
-product_getmetricid_cmd = 'curl -k -s -X GET "https://' + admin_url + \
-                                         '/admin/api/services/' + service_id + '/metrics.xml?' + 'access_token=' + admin_accesstoken +'"'
-										 
-product_getmetricid = subprocess.check_output(product_getmetricid_cmd, shell=True, universal_newlines=True)
-xmlparsed = ET.fromstring(product_getmetricid)
-metric_id = xmlparsed[0][0].text
-print " metric id = " + metric_id
-
-#Apply Product Method
-product_method_cmd = 'curl -k -s -X POST "https://' + admin_url + \
-                                    '/admin/api/services/' + service_id + '/metrics/' + metric_id + '/methods.xml"' + \
-									' -d \'access_token=' + admin_accesstoken + '\'' + \
-									' --data-urlencode \'friendly_name=' + method_config["method_name"] + '\'' + \
-									' --data-urlencode \'unit=' + method_config["unit"] + '\'' + \
-									' --data-urlencode \'system_name=' + method_config["system_name"] + '\'' + \
-                                                                        ' --data-urlencode \'description=' + method_config["description"] + '\''
-
-product_method = subprocess.check_output(product_method_cmd, shell=True, universal_newlines=True)                                 
-					
-									
-#Apply Product Mapping Rules
-product_Mapping_rule_cmd = 'curl -k -s -X POST "https://' + admin_url + \
-                                          '/admin/api/services/' + service_id + '/proxy/mapping_rules.xml"' + \
-										  ' -d \'access_token=' + admin_accesstoken + '\'' + \
-										  ' --data-urlencode \'http_method=' + mapping_rules_config["http_method"] + '\'' + \
-										  ' --data-urlencode \'pattern=' + mapping_rules_config["pattern"] + '\'' + \
-										  ' --data-urlencode \'delta=' + mapping_rules_config["delta"] + '\'' + \
-										  ' --data-urlencode \'metric_id=' +   metric_id + '\'' + \
-										  ' --data-urlencode \'position=' + mapping_rules_config["position"] + '\'' + \
-										  ' --data-urlencode \'last=' + mapping_rules_config["last"] + '\''
-										  
-product_Mapping_rule = subprocess.check_output(product_Mapping_rule_cmd, shell=True, universal_newlines=True)                                 
+#Update Backends
+get_backends_cmd= 'curl -k -s  -X GET "https://' + curl_url + '/admin/api/backend_apis.json?' + \
+                   'access_token=' + admin_accesstoken + '"';
+backends = json.loads(subprocess.check_output(get_backends_cmd, shell=True, universal_newlines=True))
+for backend in environment[env_to_promote]["backends"]:
+		#print backend["backend"]
+		backend_id = getBackendId(backends, backend["backend"])
+		#print backend_id
+		update_backend_cmd = 'curl -k -s -X PUT "https://' + curl_url + \
+						'/admin/api/backend_apis/' + str(backend_id) + '.json?access_token=' + \
+						admin_accesstoken + '"' + \
+						' --data-urlencode \'private_endpoint=' + \
+							      backend["private_base_url"] + '\''
+		print update_backend_cmd				
+		update_backend = subprocess.check_output(update_backend_cmd, shell=True, universal_newlines=True)						
 
 
-#Apply Product Active Docs
-product_activedocs_cmd = 'curl -k -s -X POST "https://' + admin_url + \
-                                    '/admin/api/active_docs.json"' + \
-									' -d \'access_token=' + admin_accesstoken + '\'' + \
-									' --data-urlencode \'name=' + activedocs_config["name"] + '\'' + \
-									' --data-urlencode \'service_id=' + service_id + '\'' + \
-									' --data-urlencode \'body=' + activedocs_config_spec + '\'' + \
-									' --data-urlencode \'description=' + activedocs_config["description"] + '\'' + \
-									' --data-urlencode \'system_name=' + activedocs_config["system_name"] + '\'' + \
-									' --data-urlencode \'skip_swagger_validations=' + activedocs_config["skip_swagger_validations"] + '\'' 
-									
-product_activedocs = subprocess.check_output(product_activedocs_cmd, shell=True, universal_newlines=True)                                 
-print "Product Active docs added "
+#promote now
+for product in environment[env_to_promote]["products"]:
+	service_id = product["id"]
+	promote_staging_cmd= 'curl -k -s  -X POST "https://' + curl_url + \
+						'/admin/api/services/' + str(service_id) + \
+    	       '/proxy/deploy.xml?access_token=' + admin_accesstoken + '"';
+	promote_staging = subprocess.check_output(promote_staging_cmd, shell=True, universal_newlines=True)
 
-#Apply Product Application plan
-product_application_plan_cmd = 'curl -k -s -X POST "https://' + admin_url + \
-                                        '/admin/api/services/' + service_id + '/application_plans.xml"' + \
-										' -d \'access_token=' + admin_accesstoken + '\'' + \
-										' --data-urlencode \'name=' + application_plan_config["name"] + '\'' + \
-									    ' --data-urlencode \'state_event=' + application_plan_config["state_event"] + '\'' + \
-									    ' --data-urlencode \'system_name=' + application_plan_config["system_name"] + '\''
-
-product_application_plan = subprocess.check_output(product_application_plan_cmd, shell=True, universal_newlines=True)                                 
-print "Product Gateway Application Plan added =>" 
-
-#Promote to Staging
-promote_staging_cmd= 'curl -k -s  -X POST "https://' + admin_url + \
-					'/admin/api/services/' + str(service_id) + \
-           '/proxy/deploy.xml?access_token=' + admin_accesstoken + '"';
-promote_staging = subprocess.check_output(promote_staging_cmd, shell=True, universal_newlines=True)
-print "Product Promoted to Staging =>" + promote_staging
-
-#Get Version
-get_version_cmd = 'curl -k -s  -X GET "https://' + admin_url + \
-					'/admin/api/services/' + str(service_id) + \
-           '/proxy/configs/sandbox/latest.json?access_token=' + admin_accesstoken + '"';
-get_version = json.loads(subprocess.check_output(get_version_cmd, shell=True, universal_newlines=True))
-version = get_version["proxy_config"]["version"]
-
-
-#Promote to Production
-promote_production_cmd= 'curl -k -s  -X POST "https://' + admin_url + \
-					'/admin/api/services/' + str(service_id) + \
-           '/proxy/configs/sandbox/' + str(version) + '/promote.json?access_token=' \
-           + admin_accesstoken + '&to=production"';
-promote_production = subprocess.check_output(promote_production_cmd, shell=True, universal_newlines=True)
-
-print "Product Promoted to Production =>"
+	promte_prod_cmd = '3scale -k proxy-config promote abg-cicd ' + product["product"]
+	print promte_prod_cmd
+	promte_prod_cmd = subprocess.check_output(promte_prod_cmd, shell=True, universal_newlines=True)
