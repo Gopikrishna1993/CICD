@@ -89,9 +89,7 @@ product_method = subprocess.check_output(product_method_cmd, shell=True, univers
 #GET default mapping ruleid Method
 					
 product_get_mappingrule_id_cmd = 'curl -k -s -X GET "https://' + admin_url + \
-                                 				'/admin/api/services/' + service_id + '/proxy/mapping_rules.xml?' + 'access_token=' +
-												admin_accesstoken +'"'
-												
+                                 	'/admin/api/services/' + service_id + '/proxy/mapping_rules.xml?' + 'access_token=' + admin_accesstoken +'"'								
 product_get_mappingrule_id=	subprocess.check_output(product_get_mappingrule_id_cmd, shell=True, universal_newlines=True)
 xmlparsed = ET.fromstring(product_get_mappingrule_id)				
 mappingrule_id = xmlparsed[0][0].text					
