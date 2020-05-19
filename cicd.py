@@ -174,7 +174,8 @@ product_apply_backend_usage_cmd = 'curl -k -s -X POST "https://' + admin_url + \
 										' -d \'access_token=' + str(admin_accesstoken) + '\'' + \
 										' --data-urlencode \'backend_api_id=' + str(backend_id) + '\'' + \
 									    ' --data-urlencode \'path=' + Backend_usage_config["path"] + '\''
-				
+
+print  product_apply_backend_usage_cmd
 
 product_apply_backend_usage= subprocess.check_output(product_apply_backend_usage_cmd, shell=True, universal_newlines=True)
 
