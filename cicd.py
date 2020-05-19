@@ -159,7 +159,7 @@ get_backends_cmd= 'curl -k -s  -X GET "https://' + admin_url + '/admin/api/backe
                    'access_token=' + admin_accesstoken + '"';
 backends = subprocess.check_output(get_backends_cmd, shell=True, universal_newlines=True)
 backends_dict = json.loads(backends)
-
+print "backend data =>" + backends_dict
 for backend in backends_dict:
 	backend_name =backend["backend_api"]["name"]
 	if backend_name == Backend_usage_config["name"]:
