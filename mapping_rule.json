@@ -1,7 +1,16 @@
 {
+  mapping_rules:[{
 "http_method":"GET",
 "pattern":"/upi/myself",
 "delta":"1",
-"position":"4",
+"position":"1",
 "last":"false"
+},
+{
+"http_method":"POST",
+"pattern":"/upi/mine",
+"delta":"1",
+"position":"2",
+"last":"false"
+}]
 }
