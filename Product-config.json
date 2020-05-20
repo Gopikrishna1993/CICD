@@ -1,6 +1,6 @@
   
 {
-	"product_name":"Policytest
+	"product_name":"Policytest",
 	"admin_url":"3scale-admin.apps.api.abgapiservices.com",
 	"sandbox_endpoint":"https://testproduct_deploy-3scale-apicast-staging.qa.apps.api.abgapiservices.com",
 	"endpoint":"https://testproduct_deploy-3scale-apicast-production.qa.apps.api.abgapiservices.com:443",
