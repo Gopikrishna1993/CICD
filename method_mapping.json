@@ -1,6 +1,14 @@
 {
+  "mappings" : [{
 "method_name":"testpurposes",
+"unit":"hit",
+"system_name":"testPurpose",
+"description":"used for CICD testing purpose"
+  },
+  { 
+"method_name":"test",
 "unit":"hit",
 "system_name":"Test",
 "description":"used for CICD testing purpose"
+}]
 }
