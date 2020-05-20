@@ -58,12 +58,16 @@ print "Product Proxy Configuration Updated  =>" + service_id
 
 #Apply Product Policies
 
-product_policy_cmd = 'curl -k -s -X PUT "https://' + admin_url + \
-									'/admin/api/services/' + service_id + '/proxy/policies.json"' + \
-									' -d \'access_token=' + admin_accesstoken + '\'' + \
-									' --data-urlencode \'policies_config=' + policy_config + '\''
-
-product_policy= subprocess.check_output(product_policy_cmd, shell=True, universal_newlines=True)                                 
+#product_policy_cmd = 'curl -k -s -X PUT "https://' + admin_url + \
+#									'/admin/api/services/' + service_id + '/proxy/policies.json"' + \
+#									' -d \'access_token=' + admin_accesstoken + '\'' + \
+#									' --data-urlencode \'policies_config=' + policy_config + '\''
+									
+product_policy_cmd = 'curl -k -s -X PUT -H "Content-Type: application/json" "https://' + admin_url + \
+                                    '/admin/api/services/' + service_id + '/proxy/policies.json?access_token=' + admin_accesstoken +'"' + \
+                                    ' -d @' + policy_filename +''
+									
+product_policy= subprocess.check_output(product_policy_cmd, shell=True, universal_newlines=True)
 print "Product Gateway Policy Applied =>" + policy_config
 
 #Get Product Metric_id
@@ -170,13 +174,11 @@ for backend in backends["backend_apis"]:
 		
 #Apply Backend usage:
 product_apply_backend_usage_cmd = 'curl -k -s -X POST "https://' + admin_url + \
-                                        '/admin/api/services/' + service_id + '/backend_usages.json"' + \
-										' -d \'access_token=' + str(admin_accesstoken) + '\'' + \
+                                        '/admin/api/services/' + str(service_id) + '/backend_usages.json"' + \
+										' -d \'access_token=' + admin_accesstoken + '\'' + \
 										' --data-urlencode \'backend_api_id=' + str(backend_id) + '\'' + \
 									    ' --data-urlencode \'path=' + Backend_usage_config["path"] + '\''
-
-print  product_apply_backend_usage_cmd
-
+										
 product_apply_backend_usage= subprocess.check_output(product_apply_backend_usage_cmd, shell=True, universal_newlines=True)
 
 print "Product Gateway Backend Usage added =>" 
