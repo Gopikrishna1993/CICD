@@ -1,5 +1,5 @@
 {
-  mapping_rules:[{
+  "mapping_rules":[{
 "http_method":"GET",
 "pattern":"/upi/myself",
 "delta":"1",
