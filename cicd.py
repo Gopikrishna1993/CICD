@@ -191,7 +191,7 @@ for backend_usage in Backend_usage_config["Backend_usages"]:
                                         '/admin/api/services/' + str(service_id) + '/backend_usages.json"' + \
                                         ' -d \'access_token=' + admin_accesstoken + '\'' + \
                                         ' --data-urlencode \'backend_api_id=' + str(backend_id) + '\'' + \
-                                        ' --data-urlencode \'path=' + Backend_usage_config["path"] + '\''
+                                        ' --data-urlencode \'path=' + backend_usage["path"] + '\''
 			print product_apply_backend_usage_cmd
 			product_apply_backend_usage=subprocess.check_output(product_apply_backend_usage_cmd, shell=True, universal_newlines=True)
 			break
