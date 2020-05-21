@@ -116,7 +116,7 @@ product_Delete_Mapping_rule= subprocess.check_output(product_Delete_Mapping_rule
 print "default_maping_rule_deleted"
                                     
 #Apply Product Mapping Rules
-for mapping_rule in mapping_rules["mapping_rules"]:
+for mapping_rule in mapping_rules_configs["mapping_rules"]:
 
     product_Mapping_rule_cmd = 'curl -k -s -X POST "https://' + admin_url + \
                                               '/admin/api/services/' + service_id + '/proxy/mapping_rules.xml"' + \
