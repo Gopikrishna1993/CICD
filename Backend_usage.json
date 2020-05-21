@@ -2,11 +2,11 @@
     "Backend_usages": [
         {
             "name": "ms_alb",
-            "path": "/",
+            "path": "/"
         },
         {
             "name": "ms_pt_backend",
-            "path": "/",
+            "path": "/"
         }
     ]
 }
