@@ -180,22 +180,20 @@ get_backends_cmd= 'curl -k -s  -X GET "https://' + admin_url + '/admin/api/backe
 backends = json.loads(subprocess.check_output(get_backends_cmd, shell=True, universal_newlines=True))
 
 for backend_usage in Backend_usage_config["Backend_usages"]:
+	
 	print backend_usage
-    for backend in backends["backend_apis"]:
-    
-        if backend["backend_api"]["system_name"] == backend_usage["name"]:
-			
+	for backend in backends["backend_apis"]:
+		if backend["backend_api"]["system_name"] == backend_usage["name"]:
 			print "Got it!!!"
-            backend_id=backend["backend_api"]["id"]
-            print backend_id
+			backend_id=backend["backend_api"]["id"]
+			print backend_id
 			product_apply_backend_usage_cmd = 'curl -k -s -X POST "https://' + admin_url + \
                                         '/admin/api/services/' + str(service_id) + '/backend_usages.json"' + \
                                         ' -d \'access_token=' + admin_accesstoken + '\'' + \
                                         ' --data-urlencode \'backend_api_id=' + str(backend_id) + '\'' + \
                                         ' --data-urlencode \'path=' + Backend_usage_config["path"] + '\''
-            print product_apply_backend_usage_cmd
-			
-            product_apply_backend_usage=subprocess.check_output(product_apply_backend_usage_cmd, shell=True, universal_newlines=True)
+			print product_apply_backend_usage_cmd
+			product_apply_backend_usage=subprocess.check_output(product_apply_backend_usage_cmd, shell=True, universal_newlines=True)
 			break
 print "Product Gateway Backend Usage added =>" 
 
