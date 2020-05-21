@@ -10,7 +10,7 @@ def readFile(filename):
     file.close()
     return file_text
 
-#admin_accesstoken = 'eca716de14ec2de174ffcbb8709b4b2dafa62b92701ce302a64c1d84020e6714'
+admin_accesstoken = 'eca716de14ec2de174ffcbb8709b4b2dafa62b92701ce302a64c1d84020e6714'
 filename = sys.argv[1]
 policy_filename = sys.argv[2]
 method_filename = sys.argv[3]
@@ -18,8 +18,8 @@ mapping_rules_filename = sys.argv[4]
 activedocs_filename = sys.argv[5]
 application_plan_filename = sys.argv[6]
 Backend_usage_filename = sys.argv[7]
-product_name=sys.argv[8]
-print filename
+#product_name=sys.argv[8]
+#print filename
 product_deploy_config=json.loads(readFile(filename))
 policy_config=json.loads(readFile(policy_filename))
 policy_config=json.dumps(policy_config) 
@@ -31,15 +31,15 @@ application_plan_config=json.loads(readFile(application_plan_filename))
 Backend_usage_config =json.loads(readFile(Backend_usage_filename))
 admin_url = '3scale-admin.apps.api.abgapiservices.com'
 
-admin_accesstoken=product_deploy_config["admin_accesstoken"]
+#admin_accesstoken=product_deploy_config["admin_accesstoken"]
 remote_name = 'abg-cicd'
 
 add_remote_cmd = '3scale -k remote add abg-cicd https://' + admin_accesstoken + '@' +product_deploy_config["admin_url"]
 add_remote = subprocess.check_output(add_remote_cmd, shell=True, universal_newlines=True)
 
 #Create API Product
-apply_product_cmd = '3scale -k service apply ' + remote_name + ' ' + product_name + \
-                                    ' -a oidc -n ' + product_name
+apply_product_cmd = '3scale -k service apply ' + remote_name + ' ' + product_deploy_config["product_name"] + \
+                                    ' -a oidc -n ' + product_deploy_config["product_name"]
 
 apply_product = subprocess.check_output(apply_product_cmd, shell=True, universal_newlines=True)
 service_id = apply_product.split(":")[1].strip()
@@ -219,35 +219,3 @@ promote_production_cmd= 'curl -k -s  -X POST "https://' + admin_url + \
 promote_production = subprocess.check_output(promote_production_cmd, shell=True, universal_newlines=True)
 
 print "Product Promoted to Production =>"
-
-
-"""
-#=>Commented codes
-=>Product Gateway Backend Usage Snippet
-            
-#for backend in backends["backend_apis"]:
-    #backend_name =backend["backend_api"]["system_name"] 
-    #if backend_name == Backend_usage_config["name"]:
-    #   backend_id =backend["backend_api"]["id"]
-
-    
-#Apply Backend usage:
-#product_apply_backend_usage_cmd = 'curl -k -s -X POST "https://' + admin_url + \
-                                        '/admin/api/services/' + str(service_id) + '/backend_usages.json"' + \
-                                        ' -d \'access_token=' + admin_accesstoken + '\'' + \
-                                        ' --data-urlencode \'backend_api_id=' + str(backend_id) + '\'' + \
-                                        ' --data-urlencode \'path=' + Backend_usage_config["path"] + '\''
-                                        
-#product_apply_backend_usage= subprocess.check_output(product_apply_backend_usage_cmd, shell=True, universal_newlines=True)
-
-#Apply Product Method
-product_method_cmd = 'curl -k -s -X POST "https://' + admin_url + \
-                                    '/admin/api/services/' + service_id + '/metrics/' + metric_id + '/methods.xml"' + \
-                                    ' -d \'access_token=' + admin_accesstoken + '\'' + \
-                                    ' --data-urlencode \'friendly_name=' + method_config["method_name"] + '\'' + \
-                                    ' --data-urlencode \'unit=' + method_config["unit"] + '\'' + \
-                                    ' --data-urlencode \'system_name=' + method_config["system_name"] + '\'' + \
-                                                                        ' --data-urlencode \'description=' + method_config["description"] + '\''
-
-product_method = subprocess.check_output(product_method_cmd, shell=True, universal_newlines=True)
-"""
