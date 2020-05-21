@@ -183,14 +183,14 @@ for backend_usage in Backend_usage_config["Backend_usages"]:
 
     for backend in backends["backend_apis"]:
     
-        if backend["backend_api"]["system_name"] == backend_usage:
+        if backend["backend_api"]["system_name"] == backend_usage["name"]:
         
             backend_id=backend["backend_api"]["id"]
             product_apply_backend_usage_cmd = 'curl -k -s -X POST "https://' + admin_url + \
                                         '/admin/api/services/' + str(service_id) + '/backend_usages.json"' + \
                                         ' -d \'access_token=' + admin_accesstoken + '\'' + \
                                         ' --data-urlencode \'backend_api_id=' + str(backend_id) + '\'' + \
-                                        ' --data-urlencode \'path=' + Backend_usage_config["path"] + '\''
+                                        ' --data-urlencode \'path=' + backend_usage["path"] + '\''
             
             product_apply_backend_usage=subprocess.check_output(product_apply_backend_usage_cmd, shell=True, universal_newlines=True)
             
