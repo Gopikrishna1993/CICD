@@ -26,7 +26,7 @@ policy_config=json.dumps(policy_config)
 method_configs=json.loads(readFile(method_filename))
 mapping_rules_configs=json.loads(readFile(mapping_rules_filename))
 active_docs_configs=json.loads(readFile(activedocs_filename))
-
+print Backend_usage_filename
 application_plan_config=json.loads(readFile(application_plan_filename))
 Backend_usage_config =json.loads(readFile(Backend_usage_filename))
 admin_url = '3scale-admin.apps.api.abgapiservices.com'
