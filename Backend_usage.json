@@ -6,11 +6,11 @@
         },
         {
             "name": "ms_pt_backend",
-            "path": "/"
+            "path": "/uri"
         },
         {
             "name": "ms_dev_oauth",
-            "path": "/"
+            "path": "/uri/path"
         }
     ]
 }
